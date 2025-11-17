@@ -244,3 +244,33 @@ eas build --platform ios
 ## License
 
 MIT License © 2025 ITS NU Pekalongan
+
+## Architecture
+
+- Frontend: React Native (Expo) + TypeScript
+- Backend: Firebase (Auth, Firestore)
+- Storage: Supabase Storage untuk upload foto
+- State Management: React Context API (AuthProvider)
+- Navigation: Expo Router (file-based routing)
+
+## Supabase RLS Fix
+
+- Buka Supabase Dashboard → Storage → bucket `foundshit`
+- Policies: matikan RLS atau tambah policy insert/select untuk role public
+- Pastikan bucket bersifat public; kemudian uji upload dari layar Lapor
+
+## Troubleshooting (Ringkas)
+
+- Index Firestore belum dibuat: buka link auto-generate dari console, atau buat composite index untuk `reports` dengan fields `status` (asc) dan `tanggalPosting` (desc)
+- Rules terlalu ketat: pastikan `match /reports/{reportId}` memiliki `allow read: if true;`
+- Auth belum aktif: aktifkan Email/Password di Firebase Authentication
+- Supabase 401/403: pastikan bucket `foundshit` public dan kebijakan insert diizinkan
+- Clear cache: `npx expo start --clear`
+
+## Changelog
+
+Version 1.0.0 — Initial Release
+- Perbaikan komponen UI dan konsistensi wrapper layar
+- Panduan setup Firebase (rules, index, auth) ditambahkan
+- Panduan Supabase upload dan RLS diperbaiki
+- Dokumentasi dan troubleshooting diperbarui
