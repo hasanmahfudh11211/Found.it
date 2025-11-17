@@ -253,7 +253,7 @@ MIT License © 2025 ITS NU Pekalongan
 - State Management: React Context API (AuthProvider)
 - Navigation: Expo Router (file-based routing)
 
-## Setup Firebase (Lengkap)
+## Setup Firebase 
 
 1. Buka Firebase Console dan buat Firestore Database dalam production mode
 2. Atur Security Rules:
@@ -296,7 +296,7 @@ service cloud.firestore {
 - Opsi B: tambah policy custom untuk role `public/anon` dengan USING: true dan WITH CHECK: true untuk INSERT/SELECT
 3. Test upload dari layar Lapor; pastikan URL publik di-log
 
-## Troubleshooting (Lengkap)
+## Troubleshooting 
 
 - Index belum dibuat: buat composite index untuk `reports` (status asc, tanggalPosting desc); tunggu hingga Enabled
 - Tidak ada data: login dan buat laporan baru dari tab Lapor; cek log "Data berhasil dimuat"
@@ -320,5 +320,3 @@ Version 1.0.0 — Initial Release
 - Perbaikan komponen UI dan konsistensi wrapper layar
 - Panduan setup Firebase (rules, index, auth) ditambahkan
 - Panduan Supabase upload dan RLS
-- Dokumentasi dan troubleshooting diperbarui
-- Konsolidasi dokumentasi ke README tanpa emoji
