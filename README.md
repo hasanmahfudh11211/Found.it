@@ -253,24 +253,72 @@ MIT License © 2025 ITS NU Pekalongan
 - State Management: React Context API (AuthProvider)
 - Navigation: Expo Router (file-based routing)
 
-## Supabase RLS Fix
+## Setup Firebase (Lengkap)
 
-- Buka Supabase Dashboard → Storage → bucket `foundshit`
-- Policies: matikan RLS atau tambah policy insert/select untuk role public
-- Pastikan bucket bersifat public; kemudian uji upload dari layar Lapor
+1. Buka Firebase Console dan buat Firestore Database dalam production mode
+2. Atur Security Rules:
 
-## Troubleshooting (Ringkas)
+```js
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    match /users/{userId} {
+      allow read: if request.auth != null;
+      allow write: if request.auth != null && request.auth.uid == userId;
+    }
+    match /reports/{reportId} {
+      allow read: if true;
+      allow create: if request.auth != null
+                    && request.resource.data.uidPelapor == request.auth.uid
+                    && request.resource.data.status == 'Aktif';
+      allow update: if request.auth != null && (
+        (resource.data.uidPelapor == request.auth.uid)
+        || (get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin')
+      );
+      allow delete: if false;
+    }
+  }
+}
+```
 
-- Index Firestore belum dibuat: buka link auto-generate dari console, atau buat composite index untuk `reports` dengan fields `status` (asc) dan `tanggalPosting` (desc)
-- Rules terlalu ketat: pastikan `match /reports/{reportId}` memiliki `allow read: if true;`
-- Auth belum aktif: aktifkan Email/Password di Firebase Authentication
-- Supabase 401/403: pastikan bucket `foundshit` public dan kebijakan insert diizinkan
-- Clear cache: `npx expo start --clear`
+3. Buat Composite Index untuk collection `reports`:
+- Field 1: `status` Ascending
+- Field 2: `tanggalPosting` Descending
+- Buat otomatis dari link di console atau lewat Firestore Indexes
 
-## Changelog
+4. Aktifkan Firebase Authentication Email/Password di Sign-in method
+
+## Setup Supabase Storage & RLS
+
+1. Buat bucket `foundshit` dan set Public
+2. Kebijakan RLS:
+- Opsi A (Rekomendasi dev): matikan RLS di Policies
+- Opsi B: tambah policy custom untuk role `public/anon` dengan USING: true dan WITH CHECK: true untuk INSERT/SELECT
+3. Test upload dari layar Lapor; pastikan URL publik di-log
+
+## Troubleshooting (Lengkap)
+
+- Index belum dibuat: buat composite index untuk `reports` (status asc, tanggalPosting desc); tunggu hingga Enabled
+- Tidak ada data: login dan buat laporan baru dari tab Lapor; cek log "Data berhasil dimuat"
+- Rules memblokir read: pastikan `allow read: if true;` pada `match /reports/{reportId}`; publish rules
+- Config Firebase tidak valid: cek `app.json` bagian `extra.firebase` (apiKey, projectId, dll) lalu restart server
+- Upload 401/403/404: pastikan bucket public dan nama bucket cocok dengan `app.json`; perbaiki RLS atau policy
+- Crash/freeze: reload app, clear cache `npx expo start --clear`, reinstall dependencies jika perlu
+- Debugging: tekan `j` di terminal untuk melihat log; gunakan pesan proses/berhasil/error di setiap screen
+
+## Development & Build
+
+- Install: `npm install`
+- Start: `npx expo start`
+- Test: `npm test`
+- Build Android: `eas build --platform android`
+- Build iOS: `eas build --platform ios`
+
+## Changelog (Ringkas)
 
 Version 1.0.0 — Initial Release
 - Perbaikan komponen UI dan konsistensi wrapper layar
 - Panduan setup Firebase (rules, index, auth) ditambahkan
-- Panduan Supabase upload dan RLS diperbaiki
+- Panduan Supabase upload dan RLS
 - Dokumentasi dan troubleshooting diperbarui
+- Konsolidasi dokumentasi ke README tanpa emoji
