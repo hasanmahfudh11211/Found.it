@@ -1,0 +1,10 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // ALLOW ALL untuk development - SANGAT PERMISSIVE
+    // Ganti dengan rules lebih ketat untuk production
+    match /{document=**} {
+      allow read, write: if true;
+    }
+  }
+}
